@@ -9,3 +9,5 @@ dist
 .vscode
 
 .yarn
+
+.yarn/install-state.gz
