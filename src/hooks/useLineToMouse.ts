@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Position } from "../custom-types";
+import FEATURES from "../features/";
 
 const useLineToMouse = () => {
   const [mousePosition, setMousePosition] = useState<Position>({
@@ -8,6 +9,8 @@ const useLineToMouse = () => {
   });
 
   useEffect(() => {
+    if (!FEATURES.ALLOW_LINE_TO_MOUSE) return;
+
     const handleMouseMove = (event: MouseEvent) => {
       setMousePosition({ x: event.clientX, y: event.clientY });
     };

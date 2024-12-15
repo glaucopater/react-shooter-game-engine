@@ -3,6 +3,7 @@
 
 - Pointer should never be visible outside the area
 - Player can be at 0 energy but still moving
+- Fix features flags
 
 ## Features
 

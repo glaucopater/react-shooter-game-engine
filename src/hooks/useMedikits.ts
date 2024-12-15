@@ -8,6 +8,7 @@ import {
 } from "../constants";
 import { playSound } from "../helpers";
 import { Position } from "../custom-types";
+import FEATURES from "../features/";
 
 type UseMedikitsProps = {
   isGameOver: boolean;
@@ -26,6 +27,8 @@ export const useMedikits = ({
   const [medikits, setMedikits] = useState<Position[]>([]);
 
   useEffect(() => {
+    if (!FEATURES.ALLOW_POWERUPS) return;
+
     if (playerHealth <= PLAYER_MAX_HEALTH) {
       const spawnMedikitInterval = setInterval(() => {
         if (!isGameOver && !isPaused && medikits.length === 0) {

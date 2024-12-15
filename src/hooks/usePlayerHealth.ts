@@ -31,6 +31,8 @@ export const usePlayerHealth = ({
   const [lastDamageTime, setLastDamageTime] = useState(0);
 
   useEffect(() => {
+    if (!FEATURES.ALLOW_PLAYER_HEALTH) return;
+
     if (!isGameOver && !isPaused && playerHealth >= 0) {
       const now = Date.now();
       if (lastDamageTime === null || now - lastDamageTime > 1000) {

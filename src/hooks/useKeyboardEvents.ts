@@ -9,6 +9,7 @@ type UseKeyboardEventsProps = {
   moveRight: () => void;
   pauseGame: () => void;
 };
+
 export const useKeyboardEvents = ({
   isGameOver,
   isPaused,

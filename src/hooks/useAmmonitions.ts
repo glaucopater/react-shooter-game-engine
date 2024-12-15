@@ -8,6 +8,7 @@ import {
 } from "../constants";
 import { playSound } from "../helpers";
 import { Position } from "../custom-types";
+import FEATURES from "../features/";
 
 type UseAmmunitionProps = {
   isGameOver: boolean;
@@ -27,6 +28,8 @@ export const useAmmunition = ({
   const [ammunitions, setAmmunitions] = useState<Position[]>([]);
 
   useEffect(() => {
+    if (!FEATURES.ALLOW_AMMONITIONS) return;
+
     if (bullets < MAX_BULLETS) {
       const spawnAmmunitionInterval = setInterval(() => {
         if (!isGameOver && !isPaused && ammunitions.length === 0) {
@@ -45,6 +48,8 @@ export const useAmmunition = ({
   }, [ammunitions.length, bullets, isGameOver, isPaused]);
 
   useEffect(() => {
+    if (!FEATURES.ALLOW_AMMONITIONS) return;
+
     const collectAmmunition = () => {
       const index = ammunitions.findIndex(
         (ammunition) =>

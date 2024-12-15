@@ -21,17 +21,16 @@ import {
   DEFAULT_PLAYER_HEIGHT,
   DEFAULT_ENEMY_WIDTH,
   DEFAULT_ENEMY_HEIGHT,
-  defaultWalls,
 } from "../../constants";
 import { Controls } from "../Controls";
 import useLineToMouse from "../../hooks/useLineToMouse";
 import { TrailToTarget } from "../TrailToTarget";
 import { WallProps } from "../Wall/index";
 import Wall from "../Wall";
+import { initialPosition, initialWalls } from "../../config";
 
 const Game = () => {
-  const initialPosition = { x: 9, y: 9 };
-  const walls: WallProps[] = defaultWalls;
+  const walls: WallProps[] = initialWalls;
 
   const {
     position,
@@ -63,6 +62,7 @@ const Game = () => {
     DEFAULT_ENEMY_WIDTH,
     DEFAULT_ENEMY_HEIGHT
   );
+
   const { playerHealth, setPlayerHealth, setLastDamageTime } = usePlayerHealth({
     isGameOver,
     setIsGameOver,
@@ -139,7 +139,7 @@ const Game = () => {
         handleMouseUp={handleMouseUp}
         isShooting={isShooting}
       >
-        {!isPaused && (
+        {!isPaused && FEATURES.ALLOW_LINE_TO_MOUSE && (
           <TrailToTarget
             rect={getPositionRect()}
             mousePosition={mousePosition}
