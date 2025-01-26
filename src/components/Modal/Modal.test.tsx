@@ -11,7 +11,7 @@ describe("Modal component", () => {
     render(
       <Modal isOpen={true} onClose={vi.fn()}>
         <div>Modal Content</div>
-      </Modal>,
+      </Modal>
     );
     expect(screen.getByText("Modal Content")).toBeInTheDocument();
   });
@@ -20,7 +20,7 @@ describe("Modal component", () => {
     render(
       <Modal isOpen={true} onClose={vi.fn()}>
         <div>Modal Content</div>
-      </Modal>,
+      </Modal>
     );
     expect(screen.getByText("Modal Content")).toBeInTheDocument();
   });
