@@ -25,30 +25,48 @@ export const Controls = ({
 
   return (
     <div className="controls">
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <button disabled={!canMove} onClick={() => moveUp()}>Up</button>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "0 20px",
-        }}
-      >
-        <button disabled={!canMove} onClick={() => moveLeft()}>Left</button>
-        <button disabled={!canMove} onClick={() => moveRight()}>Right</button>
-      </div>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <button disabled={!canMove} onClick={() => moveDown()}>Down</button>
-      </div>
-
-      <div
-        style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}
-      >
-        <button style={{ width: "100%" }} onClick={() => pauseGame()}>
-          Pause (spacebar)
+      <div className="controls__row">
+        <button
+          className="controls__button"
+          disabled={!canMove}
+          onClick={() => moveUp()}
+        >
+          Up
         </button>
       </div>
+      <div className="controls__row controls__row--middle">
+        <button
+          className="controls__button"
+          disabled={!canMove}
+          onClick={() => moveLeft()}
+        >
+          Left
+        </button>
+        <button
+          className="controls__button"
+          disabled={!canMove}
+          onClick={() => moveRight()}
+        >
+          Right
+        </button>
+      </div>
+      <div className="controls__row">
+        <button
+          className="controls__button"
+          disabled={!canMove}
+          onClick={() => moveDown()}
+        >
+          Down
+        </button>
+      </div>
+
+      <button
+        className="controls__pause"
+        type="button"
+        onClick={() => pauseGame()}
+      >
+        {isPaused ? "Resume (spacebar)" : "Pause (spacebar)"}
+      </button>
     </div>
   );
 };

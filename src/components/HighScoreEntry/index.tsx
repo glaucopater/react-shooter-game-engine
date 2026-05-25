@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { formatInitials } from "../../helpers/highScores";
 import "./HighScoreEntry.css";
 
@@ -20,6 +21,15 @@ export const HighScoreEntry = ({
     inputRef.current?.focus();
   }, []);
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (initials.length !== 3) {
@@ -29,11 +39,16 @@ export const HighScoreEntry = ({
     onSubmit(initials);
   };
 
-  return (
+  return createPortal(
     <div className="highscore-entry">
-      <div className="highscore-entry__panel">
+      <div
+        className="highscore-entry__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="highscore-title"
+      >
         <p className="highscore-entry__label">New High Score</p>
-        <h2>{totalScore}</h2>
+        <h2 id="highscore-title">{totalScore}</h2>
         <p className="highscore-entry__meta">Level reached: {level}</p>
 
         <form onSubmit={handleSubmit}>
@@ -76,6 +91,7 @@ export const HighScoreEntry = ({
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

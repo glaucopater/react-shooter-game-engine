@@ -14,6 +14,8 @@ import {
 
 type AppScreen = "main" | "game";
 
+const githubRepoUrl = packageJson.repository.url.replace(/\.git$/, "");
+
 function App() {
   const [screen, setScreen] = useState<AppScreen>("main");
   const [highScores, setHighScores] = useState<HighScoreRecord[]>(() =>
@@ -86,7 +88,20 @@ function App() {
           </>
         )}
       </div>
-      <footer className="app-footer">v{packageJson.version}</footer>
+      <footer className="app-footer">
+        <span className="app-footer__name">{packageJson.description}</span>
+        <span className="app-footer__separator">·</span>
+        <a
+          className="app-footer__link"
+          href={githubRepoUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub
+        </a>
+        <span className="app-footer__separator">·</span>
+        <span className="app-footer__version">v{packageJson.version}</span>
+      </footer>
     </div>
   );
 }

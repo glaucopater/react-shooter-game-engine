@@ -234,7 +234,8 @@ const Game = ({ onGameEnd, onMainMenu, suppressEndModals = false }: GameProps = 
   }, [isGameOver, isFinalLevelComplete, level, score, onGameEnd]);
 
   return (
-    <div className="game-shell">
+    <div className="game-shell-viewport">
+      <div className="game-shell">
       <div className="game-board">
         <AreaHeader
           level={level}
@@ -345,6 +346,7 @@ const Game = ({ onGameEnd, onMainMenu, suppressEndModals = false }: GameProps = 
         <h2>Game Paused</h2>
         <button onClick={handlePauseModalClose}>Resume</button>
       </Modal>
+      </div>
     </div>
   );
 };

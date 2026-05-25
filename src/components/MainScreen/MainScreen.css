@@ -15,6 +15,13 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
 }
 
+.main-screen__logo {
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 1rem;
+}
+
 .main-screen__eyebrow {
   margin: 0;
   letter-spacing: 0.2em;

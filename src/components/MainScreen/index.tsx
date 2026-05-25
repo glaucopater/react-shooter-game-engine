@@ -1,3 +1,4 @@
+import appLogo from "../../assets/app-logo.svg";
 import { HighScoreEntry, formatHighScoreDate } from "../../helpers/highScores";
 import "./MainScreen.css";
 
@@ -10,6 +11,13 @@ export const MainScreen = ({ highScores, onStart }: MainScreenProps) => {
   return (
     <div className="main-screen">
       <div className="main-screen__panel">
+        <img
+          className="main-screen__logo"
+          src={appLogo}
+          alt="React Shooter Game Engine"
+          width={96}
+          height={96}
+        />
         <p className="main-screen__eyebrow">React Shooter</p>
         <h1 className="main-screen__title">Game Engine</h1>
         <p className="main-screen__subtitle">

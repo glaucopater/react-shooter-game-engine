@@ -1,3 +1,30 @@
-.controls button {
-    width: 80px;
+.controls__row {
+  display: flex;
+  justify-content: center;
+}
+
+.controls__row--middle {
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 0.25rem 0;
+}
+
+.controls__button {
+  width: 5rem;
+  min-height: 2.75rem;
+  background: #2a2a2a;
+  color: #fff;
+  border-color: #555;
+}
+
+.controls__pause {
+  width: 100%;
+  margin-top: 0.75rem;
+  background: #2a2a2a;
+  color: #fff;
+  border-color: #555;
+}
+
+.controls__pause:hover:not(:disabled) {
+  border-color: #84a9ff;
 }

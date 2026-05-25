@@ -3,7 +3,7 @@
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
   box-sizing: border-box;
 }
@@ -16,6 +16,11 @@
 
 .app-main {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .app-footer {
@@ -25,48 +30,28 @@
   color: #888;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.app-footer__separator {
+  margin: 0 0.5rem;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.app-footer__link {
+  color: #84a9ff;
+  text-decoration: none;
 }
 
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-footer__link:hover {
+  text-decoration: underline;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.game-shell-viewport {
+  width: min(100%, 400px);
+  margin: 0 auto;
 }
 
 .game-shell {
-  display: inline-block;
   position: relative;
+  width: 400px;
+  max-width: 100%;
   text-align: left;
 }
 
@@ -74,20 +59,53 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  width: 400px;
+  width: 100%;
 }
 
 .hud {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  gap: 0.5rem;
   width: 100%;
   margin-top: 0.5rem;
+  font-size: 0.95rem;
 }
 
 .controls {
   width: 100%;
   margin-top: 0.5rem;
+}
+
+@media (max-width: 440px) {
+  .app {
+    padding: 0.75rem;
+  }
+
+  .game-shell-viewport {
+    width: calc(100vw - 1.5rem);
+    overflow: hidden;
+  }
+
+  .game-shell {
+    transform: scale(calc((100vw - 1.5rem) / 400));
+    transform-origin: top center;
+    margin-inline: calc((100% - 400px) / 2);
+  }
+
+  .game-shell-viewport {
+    height: calc((100vw - 1.5rem) / 400 * 680px);
+  }
+
+  .hud {
+    font-size: 0.85rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .app {
+    padding: 2rem;
+  }
 }
 
 .pulse {

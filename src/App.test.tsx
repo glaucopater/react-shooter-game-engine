@@ -8,6 +8,11 @@ describe("App", () => {
     expect(screen.getByText("Game Engine")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Start Game" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "High Scores" })).toBeInTheDocument();
+    expect(screen.getByText("React Shooter Game Engine")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "GitHub" })).toHaveAttribute(
+      "href",
+      "https://github.com/glaucopater/react-game-engine"
+    );
     expect(screen.getByText("v1.0.1")).toBeInTheDocument();
   });
 

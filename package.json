@@ -3,6 +3,10 @@
   "version": "1.0.1",
   "type": "module",
   "description": "React Shooter Game Engine",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/glaucopater/react-game-engine.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
