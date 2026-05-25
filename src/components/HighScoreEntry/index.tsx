@@ -17,8 +17,12 @@ export const HighScoreEntry = ({
   const [initials, setInitials] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  const focusInput = () => {
     inputRef.current?.focus();
+  };
+
+  useEffect(() => {
+    focusInput();
   }, []);
 
   useEffect(() => {
@@ -46,6 +50,7 @@ export const HighScoreEntry = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="highscore-title"
+        onClick={focusInput}
       >
         <p className="highscore-entry__label">New High Score</p>
         <h2 id="highscore-title">{totalScore}</h2>
@@ -56,7 +61,13 @@ export const HighScoreEntry = ({
             Enter your 3-letter name
           </label>
 
-          <div className="highscore-entry__letters">
+          <div
+            className="highscore-entry__letters"
+            onClick={(event) => {
+              event.stopPropagation();
+              focusInput();
+            }}
+          >
             {Array.from({ length: 3 }, (_, index) => (
               <span
                 key={index}
@@ -65,26 +76,31 @@ export const HighScoreEntry = ({
                     ? "highscore-entry__letter highscore-entry__letter--filled"
                     : "highscore-entry__letter"
                 }
+                aria-hidden="true"
               >
                 {initials[index] ?? ""}
               </span>
             ))}
-          </div>
 
-          <input
-            ref={inputRef}
-            id="initials"
-            className="highscore-entry__input"
-            type="text"
-            value={initials}
-            maxLength={3}
-            autoComplete="off"
-            spellCheck={false}
-            aria-label="Three letter name"
-            onChange={(event) =>
-              setInitials(formatInitials(event.target.value))
-            }
-          />
+            <input
+              ref={inputRef}
+              id="initials"
+              className="highscore-entry__input"
+              type="text"
+              inputMode="text"
+              enterKeyHint="done"
+              value={initials}
+              maxLength={3}
+              autoComplete="off"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              aria-label="Three letter name"
+              onChange={(event) =>
+                setInitials(formatInitials(event.target.value))
+              }
+            />
+          </div>
 
           <button type="submit" disabled={initials.length !== 3}>
             Save Score

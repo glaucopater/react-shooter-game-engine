@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState } from "react";
 import "./Area.css";
 import CustomCursor from "../CustomCursor";
 import { TrailToTarget } from "../TrailToTarget";
@@ -48,9 +48,7 @@ export const Area = ({
     return [[getPlayerCenter(playerPosition), { x: aimPoint.x, y: aimPoint.y }]];
   }, [activeSpecialWeapon, playerPosition, cursorPosition, walls, aimPoint]);
 
-  const areaStyle = {
-    "--area-background": `url(${getLevelBackground(level)})`,
-  } as CSSProperties;
+  const backgroundUrl = getLevelBackground(level);
 
   const updateCursorPosition = (e: React.PointerEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -63,28 +61,34 @@ export const Area = ({
   return (
     <div
       className="area"
-      style={areaStyle}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerMove={updateCursorPosition}
       onPointerEnter={() => setIsVisible(true)}
       onPointerLeave={() => setIsVisible(false)}
     >
-      {isVisible && showTrail && (
-        <TrailToTarget
-          playerPosition={playerPosition}
-          aimSegments={aimSegments}
-          weaponType={activeSpecialWeapon?.type ?? null}
-          blastCenter={
-            activeSpecialWeapon?.type === "shotgun" ? aimPoint : null
-          }
-          isShooting={isShooting}
-        />
-      )}
-      {isVisible && (
-        <CustomCursor isShooting={isShooting} position={aimPoint} />
-      )}
-      {children}
+      <div
+        className="area__background"
+        style={{ backgroundImage: `url(${backgroundUrl})` }}
+        aria-hidden="true"
+      />
+      <div className="area__entities">
+        {isVisible && showTrail && (
+          <TrailToTarget
+            playerPosition={playerPosition}
+            aimSegments={aimSegments}
+            weaponType={activeSpecialWeapon?.type ?? null}
+            blastCenter={
+              activeSpecialWeapon?.type === "shotgun" ? aimPoint : null
+            }
+            isShooting={isShooting}
+          />
+        )}
+        {isVisible && (
+          <CustomCursor isShooting={isShooting} position={aimPoint} />
+        )}
+        {children}
+      </div>
     </div>
   );
 };
