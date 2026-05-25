@@ -1,19 +1,13 @@
-/// <reference types="vitest" />
-import { defineConfig } from "vite";
-import viteCompression from "vite-plugin-compression";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  plugins: [viteCompression()],
   test: {
     globals: true,
-    environment: "jsdom",
+    environment: "happy-dom",
     setupFiles: ["vitest-setup.ts"],
-    alias: {
-      "@src": "/src",
-    },
-    coverage: {
-      reporter: ["text", "json", "html"],
-    },
     css: true,
+    typecheck: {
+      tsconfig: "./tsconfig.vitest.json",
+    },
   },
 });

@@ -1,0 +1,76 @@
+.fire-zone {
+  position: absolute;
+  pointer-events: none;
+  animation: fire-zone-fade 3s ease-out forwards;
+}
+
+.fire-zone__glow {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 120, 0, 0.45) 0%,
+    rgba(255, 60, 0, 0.2) 45%,
+    rgba(255, 60, 0, 0) 72%
+  );
+}
+
+.fire-zone__flame {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 22px;
+  filter: drop-shadow(0 0 6px rgba(255, 120, 0, 0.9));
+  animation: fire-flicker 0.45s ease-in-out infinite alternate;
+}
+
+.fire-zone__flame:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.fire-zone__flame:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.fire-zone__flame:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+.fire-zone__flame:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.fire-zone__flame:nth-child(6) {
+  animation-delay: 0.05s;
+}
+
+.fire-zone__flame:nth-child(7) {
+  animation-delay: 0.3s;
+}
+
+@keyframes fire-zone-fade {
+  0% {
+    opacity: 1;
+    transform: scale(0.7);
+  }
+
+  20% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fire-flicker {
+  from {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}

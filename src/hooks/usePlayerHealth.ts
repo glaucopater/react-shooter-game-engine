@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { DEFAULT_ENEMY_DAMAGE, PLAYER_MAX_HEALTH } from "../constants";
+import { DEFAULT_ENEMY_DAMAGE, DEFAULT_PLAYER_HEIGHT, DEFAULT_PLAYER_WIDTH, PLAYER_MAX_HEALTH } from "../constants";
 import FEATURES from "../features";
-import { playSound } from "../helpers";
+import { isEnemyCollidingWithPlayer, playSound } from "../helpers";
 import { Position } from "../custom-types";
 
 type UsePlayerHealthProps = {
@@ -34,8 +34,13 @@ export const usePlayerHealth = ({
     if (!isGameOver && !isPaused && playerHealth > 0) {
       const now = Date.now();
       if (lastDamageTime === null || now - lastDamageTime > 1000) {
-        const collision = enemies.some(
-          (enemy: Position) => enemy.x === position.x && enemy.y === position.y
+        const collision = enemies.some((enemy: Position) =>
+          isEnemyCollidingWithPlayer(
+            enemy,
+            position,
+            DEFAULT_PLAYER_WIDTH,
+            DEFAULT_PLAYER_HEIGHT
+          )
         );
         if (collision) {
           setLastDamageTime(now);

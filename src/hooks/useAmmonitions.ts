@@ -1,70 +1,76 @@
-import { useState, useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import {
   MAX_BULLETS,
   AMMO_INCREASE,
-  RANDOM_RANGE_INTERVAL,
-  MIN_LEFT_X,
-  MIN_BOTTOM_Y,
+  DEFAULT_PLAYER_WIDTH,
+  DEFAULT_PLAYER_HEIGHT,
 } from "../constants";
-import { playSound } from "../helpers";
+import { getEntityFootprintCells, playSound } from "../helpers";
 import { Position } from "../custom-types";
+import { WallProps } from "../components/Wall";
+import { usePowerUpSpawn } from "./usePowerUpSpawn";
 
 type UseAmmunitionProps = {
   isGameOver: boolean;
   isPaused: boolean;
+  level: number;
   position: Position;
   bullets: number;
+  walls: WallProps[];
   setBullets: React.Dispatch<React.SetStateAction<number>>;
+  additionalBlocked?: Position[];
 };
 
 export const useAmmunition = ({
   isGameOver,
   isPaused,
+  level,
   position,
   bullets,
+  walls,
   setBullets,
+  additionalBlocked = [],
 }: UseAmmunitionProps) => {
-  const [ammunitions, setAmmunitions] = useState<Position[]>([]);
+  const blockedCells = useMemo(
+    () =>
+      getEntityFootprintCells(
+        position,
+        DEFAULT_PLAYER_WIDTH,
+        DEFAULT_PLAYER_HEIGHT
+      ),
+    [position]
+  );
+
+  const { powerUps: ammunitions, spawnCountdown, restartSpawnTimer } =
+    usePowerUpSpawn({
+      enabled: bullets < MAX_BULLETS,
+      isGameOver,
+      isPaused,
+      level,
+      walls,
+      blockedCells,
+      additionalBlocked,
+    });
 
   useEffect(() => {
-    if (bullets < MAX_BULLETS) {
-      const spawnAmmunitionInterval = setInterval(() => {
-        if (!isGameOver && !isPaused && ammunitions.length === 0) {
-          setAmmunitions((prevAmmunitions) => [
-            ...prevAmmunitions,
-            {
-              x: Math.floor(Math.random() * MIN_LEFT_X),
-              y: Math.floor(Math.random() * MIN_BOTTOM_Y),
-            },
-          ]);
-        }
-      }, Math.floor(Math.random() * RANDOM_RANGE_INTERVAL[1]) + RANDOM_RANGE_INTERVAL[0]);
+    const index = ammunitions.findIndex(
+      (ammunition) =>
+        ammunition.x === position.x && ammunition.y === position.y
+    );
 
-      return () => clearInterval(spawnAmmunitionInterval);
-    }
-  }, [ammunitions.length, bullets, isGameOver, isPaused]);
+    if (index === -1) return;
 
-  useEffect(() => {
-    const collectAmmunition = () => {
-      const index = ammunitions.findIndex(
-        (ammunition) =>
-          ammunition.x === position.x && ammunition.y === position.y
-      );
-      if (index !== -1) {
-        const updatedAmmunitions = [...ammunitions];
-        updatedAmmunitions.splice(index, 1);
-        playSound("loadAmmo");
-        setAmmunitions(updatedAmmunitions);
-        if (bullets < MAX_BULLETS)
-          setBullets((prevBullets: number) =>
-            prevBullets + AMMO_INCREASE > MAX_BULLETS
-              ? MAX_BULLETS
-              : prevBullets + AMMO_INCREASE
-          );
-      }
-    };
-    collectAmmunition();
-  }, [position, ammunitions, bullets, setBullets]);
+    playSound("loadAmmo");
+    restartSpawnTimer();
+    setBullets((prevBullets: number) =>
+      prevBullets + AMMO_INCREASE > MAX_BULLETS
+        ? MAX_BULLETS
+        : prevBullets + AMMO_INCREASE
+    );
+  }, [position, ammunitions, setBullets, restartSpawnTimer]);
 
-  return { ammunitions, setAmmunitions };
+  return {
+    ammunitions,
+    spawnCountdown,
+  };
 };

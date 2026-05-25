@@ -1,0 +1,102 @@
+.highscore-entry {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.78);
+  z-index: 1000;
+}
+
+.highscore-entry__panel {
+  width: min(100%, 320px);
+  padding: 1.75rem;
+  border-radius: 10px;
+  background: #fff;
+  color: #111;
+  text-align: center;
+}
+
+.highscore-entry__label {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.highscore-entry__panel h2 {
+  margin: 0.35rem 0;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.highscore-entry__meta {
+  margin: 0 0 1.25rem;
+  color: #444;
+}
+
+.highscore-entry__input-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.highscore-entry__letters {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  pointer-events: none;
+}
+
+.highscore-entry__letter {
+  width: 3rem;
+  height: 3.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #bbb;
+  border-radius: 8px;
+  font-size: 2rem;
+  font-weight: 700;
+  background: #f5f5f5;
+}
+
+.highscore-entry__letter--filled {
+  border-color: #2f6fed;
+  background: #eef4ff;
+}
+
+.highscore-entry__input {
+  display: block;
+  width: 100%;
+  max-width: 12rem;
+  margin: 0 auto 1.25rem;
+  padding: 0.65rem 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.6rem;
+  text-align: center;
+  text-transform: uppercase;
+  border: 2px solid #2f6fed;
+  border-radius: 8px;
+  background: #eef4ff;
+  color: #111;
+  box-sizing: border-box;
+}
+
+.highscore-entry__panel button {
+  width: 100%;
+}
+
+.highscore-entry__panel button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.highscore-entry__panel button:not(:disabled) {
+  background: #2f6fed;
+  color: #fff;
+  border-color: #2f6fed;
+}

@@ -1,79 +1,117 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import FEATURES from "../features/";
 import { Position } from "../custom-types";
 import { WallProps } from "../components/Wall";
+import {
+  getMaxConcurrentEnemies,
+  getMaxTotalEnemySpawns,
+  getEnemyMoveSpeed,
+} from "../constants";
+import { getEnemyNextPosition, isEnemyPositionBlocked } from "../helpers";
 
 export const useEnemies = (
   isGameOver: boolean,
+  isLevelComplete: boolean,
   isPaused: boolean,
+  level: number,
   playerPositionRef: { current: Position },
   walls: WallProps[],
   enemyWidth: number,
   enemyHeight: number
 ) => {
   const [enemies, setEnemies] = useState<Position[]>([]);
+  const totalSpawnedRef = useRef(0);
+  const maxConcurrentEnemies = getMaxConcurrentEnemies(level);
+  const maxTotalEnemySpawns = getMaxTotalEnemySpawns(level);
+  const enemyMoveSpeed = getEnemyMoveSpeed(level);
 
-  const isPositionBlocked = (newPosition: Position) => {
-    for (let dx = 0; dx < enemyWidth; dx++) {
-      for (let dy = 0; dy < enemyHeight; dy++) {
-        if (
-          walls.some((wall) =>
-            wall.wallCoordinates.some(
-              (coordinate) =>
-                coordinate.x === newPosition.x + dx &&
-                coordinate.y === newPosition.y + dy
-            )
-          )
-        ) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
+  const isPositionBlocked = (x: number, y: number) =>
+    isEnemyPositionBlocked(x, y, walls, enemyWidth, enemyHeight);
+
+  useEffect(() => {
+    totalSpawnedRef.current = 0;
+    setEnemies([]);
+  }, [level]);
 
   useEffect(() => {
     if (!FEATURES.ALLOW_ENEMIES) return;
 
     const spawnEnemyInterval = setInterval(() => {
-      if (!isGameOver && enemies.length < 5 && !isPaused) {
-        let newEnemyPosition;
+      if (
+        !isGameOver &&
+        !isLevelComplete &&
+        !isPaused &&
+        enemies.length < maxConcurrentEnemies &&
+        totalSpawnedRef.current < maxTotalEnemySpawns
+      ) {
+        let newEnemyPosition: Position;
         do {
           newEnemyPosition = {
             x: Math.floor(Math.random() * 20),
             y: Math.floor(Math.random() * 20),
           };
-        } while (isPositionBlocked(newEnemyPosition));
+        } while (isPositionBlocked(newEnemyPosition.x, newEnemyPosition.y));
 
+        totalSpawnedRef.current += 1;
         setEnemies((prevEnemies) => [...prevEnemies, newEnemyPosition]);
       }
     }, 2000);
 
     return () => clearInterval(spawnEnemyInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGameOver, enemies.length, isPaused]);
+  }, [
+    isGameOver,
+    isLevelComplete,
+    enemies.length,
+    isPaused,
+    level,
+    maxConcurrentEnemies,
+    maxTotalEnemySpawns,
+  ]);
 
   useEffect(() => {
-    const moveInterval = setInterval(() => {
-      if (!isGameOver && !isPaused) {
-        const newEnemies = enemies.map((enemy) => {
-          const dx = playerPositionRef.current.x - enemy.x;
-          const dy = playerPositionRef.current.y - enemy.y;
-          const directionX = dx === 0 ? 0 : dx > 0 ? 1 : -1;
-          const directionY = dy === 0 ? 0 : dy > 0 ? 1 : -1;
-          const newPosition = {
-            x: enemy.x + directionX,
-            y: enemy.y + directionY,
-          };
-          return isPositionBlocked(newPosition) ? enemy : newPosition;
-        });
-        setEnemies(newEnemies);
-      }
-    }, 1000);
+    if (!FEATURES.ALLOW_ENEMIES || isGameOver || isLevelComplete || isPaused)
+      return;
 
-    return () => clearInterval(moveInterval);
+    let animationFrameId = 0;
+    let lastTime = performance.now();
+
+    const tick = (currentTime: number) => {
+      const deltaSeconds = Math.min((currentTime - lastTime) / 1000, 0.05);
+      lastTime = currentTime;
+
+      setEnemies((prevEnemies) => {
+        if (prevEnemies.length === 0) return prevEnemies;
+
+        return prevEnemies.map((enemy) =>
+          getEnemyNextPosition(
+            enemy,
+            playerPositionRef.current,
+            enemyMoveSpeed * deltaSeconds,
+            walls,
+            enemyWidth,
+            enemyHeight
+          )
+        );
+      });
+
+      animationFrameId = requestAnimationFrame(tick);
+    };
+
+    animationFrameId = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(animationFrameId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enemies, isGameOver, isPaused, playerPositionRef]);
+  }, [
+    isGameOver,
+    isLevelComplete,
+    isPaused,
+    playerPositionRef,
+    walls,
+    enemyWidth,
+    enemyHeight,
+    enemyMoveSpeed,
+  ]);
 
   return { enemies, setEnemies };
 };

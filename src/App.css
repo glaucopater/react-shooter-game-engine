@@ -1,8 +1,11 @@
-#root {
+#root,
+.app {
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .logo {
@@ -44,10 +47,30 @@
   color: #888;
 }
 
+.game-shell {
+  display: inline-block;
+  position: relative;
+  text-align: left;
+}
+
+.game-board {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 400px;
+}
+
 .hud {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.controls {
+  width: 100%;
+  margin-top: 0.5rem;
 }
 
 .pulse {

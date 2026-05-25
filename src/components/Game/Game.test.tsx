@@ -1,10 +1,13 @@
 import Game from "./";
 import { render, fireEvent } from "@testing-library/react";
+import { WIN_SCORE } from "../../constants";
 
 describe("Game", () => {
   it("should render the game", () => {
     const { getByText, queryByText } = render(<Game />);
     expect(getByText("Health: 100")).toBeInTheDocument();
+    expect(getByText("Level 1")).toBeInTheDocument();
+    expect(getByText(`Score: 0 / ${WIN_SCORE}`)).toBeInTheDocument();
     expect(queryByText("Game Over!")).toBeNull();
     expect(queryByText("Restart")).toBeNull();
     expect(queryByText("Game Paused")).toBeNull();

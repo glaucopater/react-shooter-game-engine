@@ -1,67 +1,90 @@
-import { useState, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import {
   PLAYER_MAX_HEALTH,
   MEDIKIT_HEALTH_INCREASE,
-  RANDOM_RANGE_INTERVAL,
-  MIN_LEFT_X,
-  MIN_BOTTOM_Y,
+  DEFAULT_PLAYER_WIDTH,
+  DEFAULT_PLAYER_HEIGHT,
+  getRandomPowerupAvatar,
 } from "../constants";
-import { playSound } from "../helpers";
-import { Position } from "../custom-types";
+import { getEntityFootprintCells, playSound } from "../helpers";
+import { MedikitPickup, Position } from "../custom-types";
+import { WallProps } from "../components/Wall";
+import { usePowerUpSpawn } from "./usePowerUpSpawn";
 
 type UseMedikitsProps = {
   isGameOver: boolean;
   isPaused: boolean;
+  level: number;
   position: Position;
   playerHealth: number;
+  walls: WallProps[];
   setPlayerHealth: React.Dispatch<React.SetStateAction<number>>;
+  additionalBlocked?: Position[];
 };
+
 export const useMedikits = ({
   isGameOver,
   isPaused,
+  level,
   position,
   playerHealth,
+  walls,
   setPlayerHealth,
+  additionalBlocked = [],
 }: UseMedikitsProps) => {
-  const [medikits, setMedikits] = useState<Position[]>([]);
+  const [medikitPickups, setMedikitPickups] = useState<MedikitPickup[]>([]);
+  const blockedCells = useMemo(
+    () =>
+      getEntityFootprintCells(
+        position,
+        DEFAULT_PLAYER_WIDTH,
+        DEFAULT_PLAYER_HEIGHT
+      ),
+    [position]
+  );
+
+  const { powerUps, spawnCountdown, restartSpawnTimer } = usePowerUpSpawn({
+    enabled: playerHealth < PLAYER_MAX_HEALTH,
+    isGameOver,
+    isPaused,
+    level,
+    walls,
+    blockedCells,
+    additionalBlocked,
+  });
 
   useEffect(() => {
-    if (playerHealth <= PLAYER_MAX_HEALTH) {
-      const spawnMedikitInterval = setInterval(() => {
-        if (!isGameOver && !isPaused && medikits.length === 0) {
-          setMedikits((prevMedikits) => [
-            ...prevMedikits,
-            {
-              x: Math.floor(Math.random() * MIN_LEFT_X),
-              y: Math.floor(Math.random() * MIN_BOTTOM_Y),
-            },
-          ]);
-        }
-      }, Math.floor(Math.random() * RANDOM_RANGE_INTERVAL[1]) + RANDOM_RANGE_INTERVAL[0]);
-
-      return () => clearInterval(spawnMedikitInterval);
+    if (powerUps.length === 0) {
+      setMedikitPickups([]);
+      return;
     }
-  }, [medikits.length, isGameOver, isPaused, playerHealth]);
+
+    setMedikitPickups(
+      powerUps.map((pickup) => ({
+        ...pickup,
+        avatar: getRandomPowerupAvatar(),
+      }))
+    );
+  }, [powerUps]);
 
   useEffect(() => {
-    const collectMedikit = () => {
-      const index = medikits.findIndex(
-        (medikit) => medikit.x === position.x && medikit.y === position.y
-      );
-      if (index !== -1) {
-        const updatedMedikits = [...medikits];
-        updatedMedikits.splice(index, 1);
-        playSound("powerup");
-        setMedikits(updatedMedikits);
-        setPlayerHealth((prevHealth: number) =>
-          prevHealth + MEDIKIT_HEALTH_INCREASE > PLAYER_MAX_HEALTH
-            ? PLAYER_MAX_HEALTH
-            : prevHealth + MEDIKIT_HEALTH_INCREASE
-        );
-      }
-    };
-    collectMedikit();
-  }, [position, medikits, setPlayerHealth]);
+    const index = medikitPickups.findIndex(
+      (medikit) => medikit.x === position.x && medikit.y === position.y
+    );
 
-  return { medikits, setMedikits };
+    if (index === -1) return;
+
+    playSound("powerup");
+    restartSpawnTimer();
+    setPlayerHealth((prevHealth: number) =>
+      prevHealth + MEDIKIT_HEALTH_INCREASE > PLAYER_MAX_HEALTH
+        ? PLAYER_MAX_HEALTH
+        : prevHealth + MEDIKIT_HEALTH_INCREASE
+    );
+  }, [position, medikitPickups, setPlayerHealth, restartSpawnTimer]);
+
+  return {
+    medikits: medikitPickups,
+    spawnCountdown,
+  };
 };

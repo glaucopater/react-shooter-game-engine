@@ -1,25 +1,20 @@
 import { AMMO_AVATAR } from "../../constants";
-import { Position } from "../../custom-types";
+import { SpawnedPickup } from "../../custom-types";
+import { Pickup } from "../Pickup";
 
 interface AmmoProps {
-  ammunition: Position;
+  ammunition: SpawnedPickup;
 }
 
 const Ammo = ({ ammunition }: AmmoProps) => {
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: `${ammunition.x * 20}px`,
-        top: `${ammunition.y * 20}px`,
-        width: "20px",
-        height: "20px",
-      }}
-    >
-      <span aria-label="ammo" role="img" style={{ fontSize: 20 }}>
-        {AMMO_AVATAR}
-      </span>
-    </div>
+    <Pickup
+      x={ammunition.x}
+      y={ammunition.y}
+      avatar={AMMO_AVATAR}
+      label="ammo"
+      isVanishing={ammunition.isVanishing}
+    />
   );
 };
 

@@ -1,7 +1,8 @@
-import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+/// <reference types="vitest/globals" />
 
-// Mock the play method
-Object.defineProperty(HTMLMediaElement.prototype, 'play', {
+import "@testing-library/jest-dom/vitest";
+import { vi } from "vitest";
+
+Object.defineProperty(HTMLMediaElement.prototype, "play", {
   value: vi.fn().mockResolvedValue(undefined),
 });
