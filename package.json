@@ -1,7 +1,8 @@
 {
-  "name": "react-game-engine",
-  "version": "0.5.0",
+  "name": "react-shooter-game-engine",
+  "version": "1.0.1",
   "type": "module",
+  "description": "React Shooter Game Engine",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
