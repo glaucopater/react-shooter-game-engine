@@ -1,33 +1,31 @@
 import { Position } from "../../custom-types";
+import { AimPoint, getPlayerCenter } from "../../helpers";
 
 export const TrailToTarget = ({
-  rect,
-  mousePosition,
+  playerPosition,
+  aimPoint,
 }: {
-  rect: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  mousePosition: Position;
+  playerPosition: Position;
+  aimPoint: AimPoint;
 }) => {
+  const playerCenter = getPlayerCenter(playerPosition);
+
   return (
     <svg
       style={{
-        position: "fixed",
+        position: "absolute",
         top: 0,
         left: 0,
-        width: "100vw",
-        height: "100vh",
+        width: "100%",
+        height: "100%",
         pointerEvents: "none",
       }}
     >
       <line
-        x1={rect.x + rect.width / 2}
-        y1={rect.y + rect.height / 2}
-        x2={mousePosition.x}
-        y2={mousePosition.y}
+        x1={playerCenter.x}
+        y1={playerCenter.y}
+        x2={aimPoint.x}
+        y2={aimPoint.y}
         stroke="white"
         strokeWidth="2"
         strokeDasharray="5"

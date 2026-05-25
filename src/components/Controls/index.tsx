@@ -1,6 +1,9 @@
 import "./Controls.css";
 
 type ControlsProps = {
+  isGameOver: boolean;
+  isPaused: boolean;
+  playerHealth: number;
   moveUp: () => void;
   moveLeft: () => void;
   moveRight: () => void;
@@ -9,16 +12,21 @@ type ControlsProps = {
 };
 
 export const Controls = ({
+  isGameOver,
+  isPaused,
+  playerHealth,
   moveUp,
   moveLeft,
   moveRight,
   moveDown,
   pauseGame,
 }: ControlsProps) => {
+  const canMove = !isGameOver && !isPaused && playerHealth > 0;
+
   return (
     <div className="controls">
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <button onClick={() => moveUp()}>Up</button>
+        <button disabled={!canMove} onClick={() => moveUp()}>Up</button>
       </div>
       <div
         style={{
@@ -27,11 +35,11 @@ export const Controls = ({
           padding: "0 20px",
         }}
       >
-        <button onClick={() => moveLeft()}>Left</button>
-        <button onClick={() => moveRight()}>Right</button>
+        <button disabled={!canMove} onClick={() => moveLeft()}>Left</button>
+        <button disabled={!canMove} onClick={() => moveRight()}>Right</button>
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <button onClick={() => moveDown()}>Down</button>
+        <button disabled={!canMove} onClick={() => moveDown()}>Down</button>
       </div>
 
       <div

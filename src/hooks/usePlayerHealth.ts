@@ -31,7 +31,7 @@ export const usePlayerHealth = ({
   const [lastDamageTime, setLastDamageTime] = useState(0);
 
   useEffect(() => {
-    if (!isGameOver && !isPaused && playerHealth >= 0) {
+    if (!isGameOver && !isPaused && playerHealth > 0) {
       const now = Date.now();
       if (lastDamageTime === null || now - lastDamageTime > 1000) {
         const collision = enemies.some(
@@ -44,7 +44,6 @@ export const usePlayerHealth = ({
             setPlayerHealth((prevHealth) =>
               Math.max(prevHealth - DEFAULT_ENEMY_DAMAGE, 0)
             );
-          if (playerHealth === 0) setIsGameOver(true);
         }
       }
     }
@@ -57,6 +56,12 @@ export const usePlayerHealth = ({
     lastDamageTime,
     setIsGameOver,
   ]);
+
+  useEffect(() => {
+    if (playerHealth <= 0 && !isGameOver) {
+      setIsGameOver(true);
+    }
+  }, [playerHealth, isGameOver, setIsGameOver]);
 
   return { playerHealth, setPlayerHealth, setLastDamageTime };
 };

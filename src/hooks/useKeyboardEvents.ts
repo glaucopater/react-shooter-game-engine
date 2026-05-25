@@ -3,6 +3,7 @@ import { useEffect } from "react";
 type UseKeyboardEventsProps = {
   isGameOver: boolean;
   isPaused: boolean;
+  playerHealth: number;
   moveUp: () => void;
   moveDown: () => void;
   moveLeft: () => void;
@@ -12,6 +13,7 @@ type UseKeyboardEventsProps = {
 export const useKeyboardEvents = ({
   isGameOver,
   isPaused,
+  playerHealth,
   moveUp,
   moveDown,
   moveLeft,
@@ -20,7 +22,7 @@ export const useKeyboardEvents = ({
 }: UseKeyboardEventsProps) => {
   useEffect(() => {
     const handleKeyDown = (e: { key: string }) => {
-      if (isGameOver) return;
+      if (isGameOver || playerHealth <= 0) return;
       if (e.key === " ") {
         pauseGame();
       } else if (!isPaused) {
@@ -51,5 +53,5 @@ export const useKeyboardEvents = ({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isGameOver, isPaused, moveUp, moveDown, moveLeft, moveRight, pauseGame]);
+  }, [isGameOver, isPaused, playerHealth, moveUp, moveDown, moveLeft, moveRight, pauseGame]);
 };

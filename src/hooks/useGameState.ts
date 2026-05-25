@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { MAX_BULLETS, WIN_SCORE } from "../constants";
 import { PLAYER_MAX_HEALTH } from "../constants";
-import { playSound } from "../helpers";
+import { playSound, hasLineOfSight, CELL_SIZE } from "../helpers";
 import { Position } from "../custom-types";
+import { WallProps } from "../components/Wall";
 
 type UseGameStateProps = {
   isGameOver: boolean;
@@ -16,6 +17,8 @@ type UseGameStateProps = {
   isPaused: boolean;
   bullets: number;
   enemies: Position[];
+  position: Position;
+  walls: WallProps[];
 };
 
 export const useGameState = ({
@@ -30,6 +33,8 @@ export const useGameState = ({
   isPaused,
   bullets,
   enemies,
+  position,
+  walls,
 }: UseGameStateProps) => {
   const [score, setScore] = useState(0);
   const [isShooting, setIsShooting] = useState(false);
@@ -69,6 +74,14 @@ export const useGameState = ({
         mouseY < (enemy.y + 1) * 20
     );
     if (clickedEnemyIndex !== -1) {
+      const enemy = enemies[clickedEnemyIndex];
+      const enemyCenter = {
+        x: enemy.x * CELL_SIZE + CELL_SIZE / 2,
+        y: enemy.y * CELL_SIZE + CELL_SIZE / 2,
+      };
+
+      if (!hasLineOfSight(position, enemyCenter, walls)) return;
+
       const updatedEnemies = [...enemies];
       updatedEnemies.splice(clickedEnemyIndex, 1);
       setEnemies(updatedEnemies);

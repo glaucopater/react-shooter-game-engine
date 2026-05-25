@@ -1,5 +1,5 @@
 .custom-cursor {
-    position: fixed;
+    position: absolute;
     pointer-events: none;
     z-index: 9999;
 }

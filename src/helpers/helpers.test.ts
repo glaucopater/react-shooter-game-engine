@@ -1,6 +1,83 @@
 import { vi } from "vitest";
 import { audio } from "../constants";
-import { getPlayerNextLeft, playSound } from "./index";
+import { generateRandomWalls, getBlockedAimPoint, getPlayerNextLeft, hasLineOfSight, playSound } from "./index";
+
+describe("generateRandomWalls", () => {
+  const playerSpawn = { x: 9, y: 9 };
+
+  it("generates wall segments within the grid", () => {
+    const walls = generateRandomWalls(playerSpawn);
+
+    expect(walls.length).toBeGreaterThan(0);
+    walls.forEach((wall) => {
+      expect(wall.wallCoordinates.length).toBeGreaterThanOrEqual(3);
+      wall.wallCoordinates.forEach((coordinate) => {
+        expect(coordinate.x).toBeGreaterThanOrEqual(0);
+        expect(coordinate.x).toBeLessThan(20);
+        expect(coordinate.y).toBeGreaterThanOrEqual(0);
+        expect(coordinate.y).toBeLessThan(20);
+      });
+    });
+  });
+
+  it("keeps walls away from the player spawn", () => {
+    const walls = generateRandomWalls(playerSpawn);
+    const occupied = walls.flatMap((wall) => wall.wallCoordinates);
+
+    occupied.forEach((coordinate) => {
+      const blocksSpawn =
+        coordinate.x >= playerSpawn.x - 1 &&
+        coordinate.x < playerSpawn.x + 3 &&
+        coordinate.y >= playerSpawn.y - 1 &&
+        coordinate.y < playerSpawn.y + 3;
+
+      expect(blocksSpawn).toBe(false);
+    });
+  });
+
+  it("does not overlap wall coordinates", () => {
+    const walls = generateRandomWalls(playerSpawn);
+    const keys = walls.flatMap((wall) =>
+      wall.wallCoordinates.map(
+        (coordinate) => `${coordinate.x},${coordinate.y}`
+      )
+    );
+
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+});
+
+describe("getBlockedAimPoint", () => {
+  const playerPosition = { x: 9, y: 9 };
+  const blockingWalls = [{ wallCoordinates: [{ x: 12, y: 10 }] }];
+
+  it("returns the target when no wall blocks the line", () => {
+    const target = { x: 150, y: 150 };
+    const aimPoint = getBlockedAimPoint(playerPosition, target, blockingWalls);
+
+    expect(aimPoint.blocked).toBe(false);
+    expect(aimPoint.x).toBe(target.x);
+    expect(aimPoint.y).toBe(target.y);
+  });
+
+  it("shortens the aim point when a wall is in the way", () => {
+    const target = { x: 280, y: 210 };
+    const aimPoint = getBlockedAimPoint(playerPosition, target, blockingWalls);
+
+    expect(aimPoint.blocked).toBe(true);
+    expect(aimPoint.x).toBeLessThan(target.x);
+    expect(aimPoint.y).toBeLessThan(target.y);
+  });
+
+  it("reports line of sight only when the path is clear", () => {
+    expect(hasLineOfSight(playerPosition, { x: 150, y: 150 }, blockingWalls)).toBe(
+      true
+    );
+    expect(hasLineOfSight(playerPosition, { x: 280, y: 210 }, blockingWalls)).toBe(
+      false
+    );
+  });
+});
 
 describe("getPlayerNextLeft", () => {
   it("returns x when nextX is less than or esqual to 0 + size", () => {

@@ -13,7 +13,7 @@ import { useMedikits } from "../../hooks/useMedikits";
 import { useKeyboardEvents } from "../../hooks/useKeyboardEvents";
 import { useGameState } from "../../hooks/useGameState";
 import { usePlayerMovement } from "../../hooks/usePlayerMovement";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   MAX_BULLETS,
   WIN_SCORE,
@@ -21,17 +21,21 @@ import {
   DEFAULT_PLAYER_HEIGHT,
   DEFAULT_ENEMY_WIDTH,
   DEFAULT_ENEMY_HEIGHT,
-  defaultWalls,
 } from "../../constants";
 import { Controls } from "../Controls";
-import useLineToMouse from "../../hooks/useLineToMouse";
-import { TrailToTarget } from "../TrailToTarget";
 import { WallProps } from "../Wall/index";
 import Wall from "../Wall";
+import { generateRandomWalls } from "../../helpers";
 
 const Game = () => {
   const initialPosition = { x: 9, y: 9 };
-  const walls: WallProps[] = defaultWalls;
+  const [walls, setWalls] = useState<WallProps[]>(() =>
+    generateRandomWalls(
+      initialPosition,
+      DEFAULT_PLAYER_WIDTH,
+      DEFAULT_PLAYER_HEIGHT
+    )
+  );
 
   const {
     position,
@@ -53,7 +57,6 @@ const Game = () => {
 
   const [refPlayerPosition, setRefPlayerPosition] =
     useState<HTMLDivElement | null>(null);
-  const { mousePosition } = useLineToMouse();
 
   const { enemies, setEnemies } = useEnemies(
     isGameOver,
@@ -91,6 +94,8 @@ const Game = () => {
     isPaused,
     bullets,
     enemies,
+    position,
+    walls,
   });
 
   const { ammunitions } = useAmmunition({
@@ -112,6 +117,7 @@ const Game = () => {
   useKeyboardEvents({
     isGameOver,
     isPaused,
+    playerHealth,
     moveUp,
     moveDown,
     moveLeft,
@@ -119,18 +125,16 @@ const Game = () => {
     pauseGame,
   });
 
-  const getPositionRect = () => {
-    if (refPlayerPosition) {
-      return refPlayerPosition?.getBoundingClientRect() as {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-      };
-    } else {
-      return { x: 0, y: 0, width: 0, height: 0 };
-    }
-  };
+  const handleResetGame = useCallback(() => {
+    resetGame();
+    setWalls(
+      generateRandomWalls(
+        initialPosition,
+        DEFAULT_PLAYER_WIDTH,
+        DEFAULT_PLAYER_HEIGHT
+      )
+    );
+  }, [resetGame]);
 
   return (
     <div style={{ padding: 0, position: "relative" }}>
@@ -138,13 +142,10 @@ const Game = () => {
         handleMouseDown={handleMouseDown}
         handleMouseUp={handleMouseUp}
         isShooting={isShooting}
+        showTrail={!isPaused}
+        playerPosition={position}
+        walls={walls}
       >
-        {!isPaused && (
-          <TrailToTarget
-            rect={getPositionRect()}
-            mousePosition={mousePosition}
-          />
-        )}
         <Player
           position={position}
           health={playerHealth}
@@ -177,6 +178,9 @@ const Game = () => {
       </Area>
       <Hud playerHealth={playerHealth} bullets={bullets} />
       <Controls
+        isGameOver={isGameOver}
+        isPaused={isPaused}
+        playerHealth={playerHealth}
         moveUp={moveUp}
         moveLeft={moveLeft}
         moveRight={moveRight}
@@ -184,10 +188,10 @@ const Game = () => {
         pauseGame={pauseGame}
       />
 
-      <Modal isOpen={isGameOver} onClose={resetGame}>
+      <Modal isOpen={isGameOver} onClose={handleResetGame}>
         <h2>{score >= WIN_SCORE ? "You Win!" : "Game Over!"}</h2>
         <p>Your score: {score}</p>
-        <button onClick={resetGame}>Restart</button>
+        <button onClick={handleResetGame}>Restart</button>
       </Modal>
 
       <Modal isOpen={isPaused} onClose={handlePauseModalClose}>
