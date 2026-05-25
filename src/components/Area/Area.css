@@ -5,6 +5,7 @@
   border: 1px solid #ccc;
   cursor: none;
   overflow: hidden;
+  touch-action: none;
 }
 
 .game-board {

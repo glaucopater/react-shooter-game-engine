@@ -4,9 +4,9 @@ import { PLAYER_MAX_HEALTH } from "../constants";
 import {
   playSound,
   hasLineOfSight,
-  CELL_SIZE,
-  getEnemiesHitBySpecialWeapon,
   getGridCellCenter,
+  getEnemiesHitBySpecialWeapon,
+  getStandardShotEnemyIndex,
 } from "../helpers";
 import { ActiveSpecialWeapon, Bomb, Position } from "../custom-types";
 import { WallProps } from "../components/Wall";
@@ -90,11 +90,11 @@ export const useGameState = ({
     setIsPaused((prevPaused: boolean) => !prevPaused);
   };
 
-  const handleMouseDown = (e: {
-    currentTarget: { getBoundingClientRect: () => DOMRect };
-    clientX: number;
-    clientY: number;
-  }) => {
+  const fireAtPoint = (
+    clientX: number,
+    clientY: number,
+    rect: DOMRect
+  ) => {
     if (isGameOver || isLevelComplete || isPaused) return;
 
     const hasSpecialShots =
@@ -102,9 +102,8 @@ export const useGameState = ({
 
     if (!hasSpecialShots && bullets === 0) return;
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    const mouseX = clientX - rect.left;
+    const mouseY = clientY - rect.top;
     setIsShooting(true);
     playSound("shotgun");
 
@@ -158,22 +157,15 @@ export const useGameState = ({
     }
 
     setBullets((prevBullets: number) => prevBullets - 1);
-    const clickedEnemyIndex = enemies.findIndex(
-      (enemy: Position) =>
-        mouseX >= enemy.x * 20 &&
-        mouseX < (enemy.x + 1) * 20 &&
-        mouseY >= enemy.y * 20 &&
-        mouseY < (enemy.y + 1) * 20
+
+    const clickedEnemyIndex = getStandardShotEnemyIndex(
+      position,
+      { x: mouseX, y: mouseY },
+      enemies,
+      walls
     );
+
     if (clickedEnemyIndex !== -1) {
-      const enemy = enemies[clickedEnemyIndex];
-      const enemyCenter = {
-        x: enemy.x * CELL_SIZE + CELL_SIZE / 2,
-        y: enemy.y * CELL_SIZE + CELL_SIZE / 2,
-      };
-
-      if (!hasLineOfSight(position, enemyCenter, walls)) return;
-
       const updatedEnemies = [...enemies];
       updatedEnemies.splice(clickedEnemyIndex, 1);
       setEnemies(updatedEnemies);
@@ -181,7 +173,15 @@ export const useGameState = ({
     }
   };
 
-  const handleMouseUp = (e: { preventDefault: () => void }) => {
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) {
+      return;
+    }
+
+    fireAtPoint(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect());
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsShooting(false);
   };
@@ -201,8 +201,8 @@ export const useGameState = ({
     resetGame,
     advanceLevel,
     pauseGame,
-    handleMouseDown,
-    handleMouseUp,
+    handlePointerDown,
+    handlePointerUp,
     handlePauseModalClose,
   };
 };

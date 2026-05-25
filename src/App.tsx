@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import packageJson from "../package.json";
 import "./App.css";
 import Game from "./components/Game";
 import { MainScreen } from "./components/MainScreen";
@@ -64,21 +65,24 @@ function App() {
 
   return (
     <div className="app">
-      {screen === "main" && (
-        <MainScreen highScores={highScores} onStart={handleStartGame} />
-      )}
-      {screen === "game" && (
-        <>
-          <Game onGameEnd={handleGameEnd} onMainMenu={handleMainMenu} />
-          {pendingHighScore && (
-            <HighScoreEntry
-              totalScore={pendingHighScore.totalScore}
-              level={pendingHighScore.level}
-              onSubmit={handleHighScoreSubmit}
-            />
-          )}
-        </>
-      )}
+      <div className="app-main">
+        {screen === "main" && (
+          <MainScreen highScores={highScores} onStart={handleStartGame} />
+        )}
+        {screen === "game" && (
+          <>
+            <Game onGameEnd={handleGameEnd} onMainMenu={handleMainMenu} />
+            {pendingHighScore && (
+              <HighScoreEntry
+                totalScore={pendingHighScore.totalScore}
+                level={pendingHighScore.level}
+                onSubmit={handleHighScoreSubmit}
+              />
+            )}
+          </>
+        )}
+      </div>
+      <footer className="app-footer">v{packageJson.version}</footer>
     </div>
   );
 }

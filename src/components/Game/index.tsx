@@ -137,8 +137,8 @@ const Game = ({ onGameEnd, onMainMenu }: GameProps = {}) => {
     resetGame,
     advanceLevel,
     pauseGame,
-    handleMouseDown,
-    handleMouseUp,
+    handlePointerDown,
+    handlePointerUp,
     handlePauseModalClose,
   } = useGameState({
     isGameOver,
@@ -245,8 +245,8 @@ const Game = ({ onGameEnd, onMainMenu }: GameProps = {}) => {
         />
         <Area
           level={level}
-          handleMouseDown={handleMouseDown}
-          handleMouseUp={handleMouseUp}
+          handlePointerDown={handlePointerDown}
+          handlePointerUp={handlePointerUp}
           isShooting={isShooting}
           showTrail={!isGameplayPaused}
           playerPosition={position}

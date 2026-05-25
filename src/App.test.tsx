@@ -8,6 +8,7 @@ describe("App", () => {
     expect(screen.getByText("Game Engine")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Start Game" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "High Scores" })).toBeInTheDocument();
+    expect(screen.getByText("v1.0.1")).toBeInTheDocument();
   });
 
   it("starts the game from the main screen", () => {

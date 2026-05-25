@@ -5,12 +5,14 @@ interface ModalProps {
   children: React.ReactNode;
 }
 
-const Modal = ({ isOpen, children }: ModalProps) => {
+const Modal = ({ isOpen, onClose, children }: ModalProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-wrapper">
-      <div className="modal">{children}</div>
+    <div className="modal-wrapper" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        {children}
+      </div>
     </div>
   );
 };

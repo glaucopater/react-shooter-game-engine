@@ -13,6 +13,7 @@ import {
   SHOTGUN_SPREAD_COUNT,
   SHOTGUN_SPREAD_ANGLE,
   RICOCHET_MAX_BOUNCES,
+  ENEMY_HIT_SIZE,
 } from "../constants";
 import { Position, SpecialWeaponType } from "../custom-types";
 import { WallProps } from "../components/Wall";
@@ -509,6 +510,63 @@ export const isPlayerInFireZone = (
   return false;
 };
 
+export const getEnemyCenter = (enemy: Position): PixelPoint => ({
+  x: enemy.x * CELL_SIZE + ENEMY_HIT_SIZE / 2,
+  y: enemy.y * CELL_SIZE + ENEMY_HIT_SIZE / 2,
+});
+
+export const isPointInEnemyBounds = (
+  pixelX: number,
+  pixelY: number,
+  enemy: Position
+) => {
+  const left = enemy.x * CELL_SIZE;
+  const top = enemy.y * CELL_SIZE;
+
+  return (
+    pixelX >= left &&
+    pixelX < left + ENEMY_HIT_SIZE &&
+    pixelY >= top &&
+    pixelY < top + ENEMY_HIT_SIZE
+  );
+};
+
+export const getStandardShotEnemyIndex = (
+  playerPosition: Position,
+  aimPixel: PixelPoint,
+  enemies: Position[],
+  walls: WallProps[]
+): number => {
+  const start = getPlayerCenter(playerPosition);
+  const blockedAim = getBlockedAimPoint(playerPosition, aimPixel, walls);
+  const end = { x: blockedAim.x, y: blockedAim.y };
+
+  const tryEnemy = (index: number) => {
+    const center = getEnemyCenter(enemies[index]);
+    return hasLineOfSight(playerPosition, center, walls) ? index : -1;
+  };
+
+  const directHit = enemies.findIndex((enemy) =>
+    isPointInEnemyBounds(aimPixel.x, aimPixel.y, enemy)
+  );
+  if (directHit !== -1) {
+    const confirmed = tryEnemy(directHit);
+    if (confirmed !== -1) {
+      return confirmed;
+    }
+  }
+
+  const hits = getEnemyHitsOnSegment(start, end, enemies);
+  for (const { index } of hits) {
+    const confirmed = tryEnemy(index);
+    if (confirmed !== -1) {
+      return confirmed;
+    }
+  }
+
+  return -1;
+};
+
 export const getRayDirection = (
   start: PixelPoint,
   target: PixelPoint
@@ -630,10 +688,7 @@ const getEnemyHitsOnSegment = (
   const hits: { index: number; t: number }[] = [];
 
   enemies.forEach((enemy, index) => {
-    const center = {
-      x: enemy.x * CELL_SIZE + CELL_SIZE / 2,
-      y: enemy.y * CELL_SIZE + CELL_SIZE / 2,
-    };
+    const center = getEnemyCenter(enemy);
     const t = ((center.x - start.x) * dx + (center.y - start.y) * dy) / lengthSquared;
 
     if (t <= 0.001 || t > 1) {
@@ -646,7 +701,7 @@ const getEnemyHitsOnSegment = (
     };
     const distance = Math.hypot(center.x - closestPoint.x, center.y - closestPoint.y);
 
-    if (distance <= CELL_SIZE / 2) {
+    if (distance <= ENEMY_HIT_SIZE / 2) {
       hits.push({ index, t });
     }
   });

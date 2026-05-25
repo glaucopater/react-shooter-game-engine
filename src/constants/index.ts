@@ -54,6 +54,7 @@ export const ENEMY_MAX_SPEED = 2;
 export const DAMAGE_AREA_SIZE = 5;
 
 export const DEFAULT_ENEMY_SIZE = 30;
+export const ENEMY_HIT_SIZE = DEFAULT_ENEMY_SIZE;
 export const DEFAULT_ENEMY_DAMAGE = 25;
 export const DEFAULT_ENEMY_STRIDE = 7;
 export const DEFAULT_ENEMY_WIDTH = 1;

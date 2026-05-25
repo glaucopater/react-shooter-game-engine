@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 import { audio, ENEMY_MOVE_SPEED, getEnemyMoveSpeed, getMaxConcurrentEnemies, getMaxTotalEnemySpawns, getWallCountForLevel } from "../constants";
-import { generateRandomWalls, getRandomOpenPosition, getBlockedAimPoint, getEntityFootprintCells, getPlayerNextLeft, hasLineOfSight, isEnemyCollidingWithPlayer, isEnemyPositionBlocked, getEnemyNextPosition, isOpenGridCell, isPositionOnWall, playSound, getEnemiesHitByPierceShot, getEnemiesHitByShotgun, traceRicochetPath, getSpecialWeaponAimPath, isPointInGridCell } from "./index";
+import { generateRandomWalls, getRandomOpenPosition, getBlockedAimPoint, getEntityFootprintCells, getPlayerNextLeft, hasLineOfSight, isEnemyCollidingWithPlayer, isEnemyPositionBlocked, getEnemyNextPosition, isOpenGridCell, isPositionOnWall, playSound, getEnemiesHitByPierceShot, getEnemiesHitByShotgun, traceRicochetPath, getSpecialWeaponAimPath, isPointInGridCell, getStandardShotEnemyIndex } from "./index";
 import { RICOCHET_MAX_BOUNCES, SHOTGUN_AOE_RADIUS } from "../constants";
 
 describe("generateRandomWalls", () => {
@@ -299,6 +299,19 @@ describe("enemy movement", () => {
   it("detects clicks inside a grid cell", () => {
     expect(isPointInGridCell(65, 45, { x: 3, y: 2 })).toBe(true);
     expect(isPointInGridCell(10, 10, { x: 3, y: 2 })).toBe(false);
+  });
+
+  it("hits enemies along the aim line and within sprite bounds", () => {
+    const playerPosition = { x: 9, y: 9 };
+    const enemies = [{ x: 10.2, y: 9.4 }];
+    const clickedEnemyIndex = getStandardShotEnemyIndex(
+      playerPosition,
+      { x: 215, y: 198 },
+      enemies,
+      []
+    );
+
+    expect(clickedEnemyIndex).toBe(0);
   });
 });
 

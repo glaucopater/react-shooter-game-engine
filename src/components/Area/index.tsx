@@ -13,8 +13,8 @@ import { getLevelBackground } from "../../constants";
 
 export const Area = ({
   level,
-  handleMouseDown,
-  handleMouseUp,
+  handlePointerDown,
+  handlePointerUp,
   isShooting,
   showTrail,
   playerPosition,
@@ -23,8 +23,8 @@ export const Area = ({
   children,
 }: {
   level: number;
-  handleMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
-  handleMouseUp: (e: React.MouseEvent<HTMLDivElement>) => void;
+  handlePointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
+  handlePointerUp: (e: React.PointerEvent<HTMLDivElement>) => void;
   isShooting: boolean;
   showTrail: boolean;
   playerPosition: Position;
@@ -52,7 +52,7 @@ export const Area = ({
     "--area-background": `url(${getLevelBackground(level)})`,
   } as CSSProperties;
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const updateCursorPosition = (e: React.PointerEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setCursorPosition({
       x: e.clientX - rect.left,
@@ -64,11 +64,11 @@ export const Area = ({
     <div
       className="area"
       style={areaStyle}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsVisible(true)}
-      onMouseLeave={() => setIsVisible(false)}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerMove={updateCursorPosition}
+      onPointerEnter={() => setIsVisible(true)}
+      onPointerLeave={() => setIsVisible(false)}
     >
       {isVisible && showTrail && (
         <TrailToTarget
